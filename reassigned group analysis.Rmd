@@ -1,0 +1,33 @@
+---
+title: "Q3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(readr)
+INCIDENT_OWNER_HISTORY <- read_csv("INCIDENT_OWNER_HISTORY.csv")
+#View(INCIDENT_OWNER_HISTORY)
+```
+
+```{r}
+INCIDENT_OWNER_HISTORY_Q3 <- INCIDENT_OWNER_HISTORY %>%
+                       select(assigned_group, TIME_IN_STATUS_BY_OWNER_HRS) %>%
+                       filter(is.na(assigned_group) == FALSE, is.na(TIME_IN_STATUS_BY_OWNER_HRS)==FALSE)
+
+mean_time <- INCIDENT_OWNER_HISTORY_Q3 %>% 
+             group_by(assigned_group) %>%
+            summarise(mean = mean(TIME_IN_STATUS_BY_OWNER_HRS),
+                        n = n())
+             
+mean_time %>% arrange(desc(mean))
+mean_time
+
+mean_time
+```

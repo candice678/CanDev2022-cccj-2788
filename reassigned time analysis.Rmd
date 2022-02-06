@@ -1,0 +1,194 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(readr)
+INCIDENT_OWNER_HISTORY <- read_csv("Desktop/kandefu/INCIDENT_OWNER_HISTORY.csv")
+```
+
+
+```{r}
+INCIDENT_OWNER_HISTORY_Q2 <- INCIDENT_OWNER_HISTORY %>%
+                       select(ticket_nmbr, assigned_group) %>%
+                       filter(is.na(ticket_nmbr) == FALSE, is.na(assigned_group)==FALSE,
+                              ticket_nmbr != '', assigned_group != '')
+# view(INCIDENT_OWNER_HISTORY_Q2)
+glimpse(INCIDENT_OWNER_HISTORY_Q2)
+```
+```{r}
+dim(INCIDENT_OWNER_HISTORY_Q2)
+```
+
+
+```{r}
+df <- data.frame("ticket" = 1:9792, "orgnum" = 1:9792)
+df
+```
+
+
+```{r}
+num_ticket = 0
+orgnum = 1 
+
+for (i in 1:(dim(INCIDENT_OWNER_HISTORY_Q2)[1]-982849)) { 
+  if (INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i] == INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]){
+    
+    if(INCIDENT_OWNER_HISTORY_Q2$assigned_group[i] != INCIDENT_OWNER_HISTORY_Q2$assigned_group[i+1])
+    {orgnum <- orgnum + 1}
+    
+   }
+  #for (x in 2:dim(INCIDENT_OWNER_HISTORY_Q2)[1]) {
+   else{
+      num_ticket = num_ticket + 1
+      df$ticket[num_ticket] <- INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]
+      df$orgnum[num_ticket - 1] <- orgnum
+      orgnum = 1
+    }
+    
+  }
+
+df$orgnum[2473] <- 6
+num_ticket
+df
+
+```
+
+
+
+
+```{r}
+num_ticket = 2473
+orgnum = 1 
+
+for (i in 10000:20000) { 
+  if (INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i] == INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]){
+    
+    if(INCIDENT_OWNER_HISTORY_Q2$assigned_group[i] != INCIDENT_OWNER_HISTORY_Q2$assigned_group[i+1])
+    {orgnum <- orgnum + 1}
+    
+   }
+  #for (x in 2:dim(INCIDENT_OWNER_HISTORY_Q2)[1]) {
+   else{
+      num_ticket = num_ticket + 1
+      df$ticket[num_ticket] <- INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]
+      df$orgnum[num_ticket - 1] <- orgnum
+      orgnum = 1
+    }
+    
+  }
+
+# df$orgnum[2473] <- 6
+num_ticket
+df
+
+```
+```{r}
+tail(df,5)
+```
+
+```{r}
+num_ticket = 4966
+orgnum = 1 
+
+for (i in 100000:110000) { 
+  if (INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i] == INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]){
+    
+    if(INCIDENT_OWNER_HISTORY_Q2$assigned_group[i] != INCIDENT_OWNER_HISTORY_Q2$assigned_group[i+1])
+    {orgnum <- orgnum + 1}
+    
+   }
+  #for (x in 2:dim(INCIDENT_OWNER_HISTORY_Q2)[1]) {
+   else{
+      num_ticket = num_ticket + 1
+      df$ticket[num_ticket] <- INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]
+      df$orgnum[num_ticket - 1] <- orgnum
+      orgnum = 1
+    }
+    
+  }
+
+# df$orgnum[2473] <- 6
+num_ticket
+df
+
+```
+```{r}
+num_ticket = 7425
+orgnum = 1 
+
+for (i in 900000:910000) { 
+  if (INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i] == INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]){
+    
+    if(INCIDENT_OWNER_HISTORY_Q2$assigned_group[i] != INCIDENT_OWNER_HISTORY_Q2$assigned_group[i+1])
+    {orgnum <- orgnum + 1}
+    
+   }
+  #for (x in 2:dim(INCIDENT_OWNER_HISTORY_Q2)[1]) {
+   else{
+      num_ticket = num_ticket + 1
+      df$ticket[num_ticket] <- INCIDENT_OWNER_HISTORY_Q2$ticket_nmbr[i+1]
+      df$orgnum[num_ticket - 1] <- orgnum
+      orgnum = 1
+    }
+    
+  }
+
+
+num_ticket
+df
+```
+
+```{r}
+df <- df[-c(9792),]
+tail(df)
+```
+```{r}
+ticket_org <- df
+ticket_org
+write.csv(ticket_org,"Desktop/kandefu/ticket_org.csv", row.names = TRUE)
+```
+
+### Q2
+
+```{r， include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(readr)
+ticket_org_time <- read_csv("ticket_org_time.csv")
+# View(ticket_org_time)
+```
+
+```{r}
+glimpse(ticket_org_time)
+```
+
+
+```{r}
+ticket_org_time_Q2 <- ticket_org_time %>%
+                       select(TICKET_NMBR, orgnum, BUSINESS_COMPLETION_HRS) %>%
+                       filter(is.na(TICKET_NMBR) == FALSE, is.na(orgnum)==FALSE,              is.na(BUSINESS_COMPLETION_HRS) == FALSE)
+
+mean_time <- ticket_org_time_Q2 %>% 
+             group_by(orgnum) %>%
+             summarise(mean = mean(BUSINESS_COMPLETION_HRS),
+                        n = n())
+             
+mean_time %>% arrange(desc(mean))
+mean_time
+```
+
+```{r}
+
+```
+
+

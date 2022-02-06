@@ -1,0 +1,116 @@
+---
+title: "question7_candicelu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+ticket_orgtime <- read_csv("./ticket_org_time.csv")
+library(tidyverse)
+library(car)
+library(patchwork)
+```
+
+We want to use linear regression to see if correlation occurs. 
+
+```{r}
+# Remove na
+ticket_orgtime <- ticket_orgtime %>%
+  filter(!is.na(BUSINESS_COMPLETION_HRS & orgnum)) %>%
+  filter(BUSINESS_COMPLETION_HRS >= 0)
+```
+
+
+## Step 1: Conduct Exploratory Data Analysis for training data.
+
+### Comparing the Exploratory Data Analysis for training and test datasets.
+### Numerical Summaries
+```{r}
+summary(ticket_orgtime$`BUSINESS_COMPLETION_HRS`)
+```
+
+\newpage
+
+### Graphical Summaries
+```{r}
+# Boxplot for the response and predictor of the training data
+box_completionhr <- ggplot(data=ticket_orgtime, aes(x="", y=BUSINESS_COMPLETION_HRS)) + geom_boxplot(color = "black", fill = "grey") + labs(title = "Completion Hours") + coord_flip()
+
+# Boxplot for the response and predictor of the test data
+box_completionhr <- ggplot(data=ticket_orgtime, aes(x="", y=BUSINESS_COMPLETION_HRS)) + geom_boxplot(color = "black", fill = "grey") + labs(title = "Completion Hours") + coord_flip()
+
+```
+
+```{r}
+# Find the correlation of predictor and Response
+cor(ticket_orgtime$orgnum, ticket_orgtime$BUSINESS_COMPLETION_HRS)
+# weak correlation between these two variable
+```
+
+
+\newpage
+
+### Build histograms for the response in training and test dataset to compare the distribution.
+```{r}
+# Histogram of training data
+ticket_orgtime %>%
+  ggplot(aes(x = BUSINESS_COMPLETION_HRS)) + geom_histogram (bins = 50, colour = "black", fill = "grey")
+
+```
+
+# Split into training and test data
+```{r}
+set.seed(200)
+n <- nrow(ticket_orgtime)
+ticket_orgtime <- ticket_orgtime %>% rowid_to_column()
+
+training_indices <- sample(1:n, size =round(0.8*n))
+train <- ticket_orgtime %>% filter(rowid %in% training_indices)
+test <- ticket_orgtime %>% filter(!(rowid %in% training_indices))
+```
+
+
+## Step 3:Build the simple linear regression model using training dataset.
+
+```{r}
+model_train=lm(train$BUSINESS_COMPLETION_HRS~train$orgnum)
+summary(model_train)
+```
+
+p-value very small, very strong evidence against the null hypothesis that the slope is 0.
+
+```{r}
+train %>%
+  ggplot(aes(x=orgnum, y=BUSINESS_COMPLETION_HRS)) + geom_point() + geom_smooth(method="lm", se=FALSE) + theme_minimal()
+```
+```{r}
+#make predictions for testing data using training model
+yhat_test <- predict(model_train, newdata = test)
+y_test <- test$BUSINESS_COMPLETION_HRS; n_test <-nrow(test)
+#RMSE for prediction in testing data
+sqrt(sum((y_test - yhat_test)^2) / n_test)
+```
+```{r}
+# make predictions for training data using training mode
+yhat_train <- predict(model_train, newdata = train)
+y_train <- train$BUSINESS_COMPLETION_HRS; n_train <-nrow(train)
+#RMSE for prediction in testing data
+sqrt(sum((y_train - yhat_train)^2) / n_train)
+```
+
+RMSE for the testing data is larger than for the training data. Maybe some evidence of overfitting.
+
+
+```{r}
+summary(model_train)$r.squared
+```
+
+```{r}
+cor(train$orgnum, train$BUSINESS_COMPLETION_HRS)^2
+```
+
+R-squared close to 0 indicates that x does not explain much of the variability in y
+

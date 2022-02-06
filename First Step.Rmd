@@ -1,0 +1,153 @@
+---
+title: "First Step"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, , include=FALSE}
+library(readr)
+INCIDENTS <- read_csv("./kandefu/INCIDENTS.csv")
+# View(INCIDENTS)
+```
+
+```{r}
+glimpse(INCIDENTS)
+```
+
+```{r}
+INCIDENTS_first_step <- INCIDENTS %>%
+                        select(TICKET_NMBR, PRIORITY, ACTUAL_COMPLETION_HRS, BUSINESS_COMPLETION_HRS) %>%
+                        filter(is.na(TICKET_NMBR) == FALSE, 
+                               is.na(PRIORITY)==FALSE,
+                               is.na(ACTUAL_COMPLETION_HRS) == FALSE,
+                               is.na(BUSINESS_COMPLETION_HRS) == FALSE)
+glimpse(INCIDENTS_first_step)
+  
+```
+
+```{r}
+INCIDENTS_first_step %>% group_by(PRIORITY) %>%
+                         summarise(n = n())
+```
+
+
+
+```{r}
+# low
+INCIDENTS_first_step_low <- INCIDENTS_first_step %>%
+                            filter(PRIORITY == "Low", ACTUAL_COMPLETION_HRS < 250000, ACTUAL_COMPLETION_HRS > 0) 
+                            
+INCIDENTS_first_step_low %>% summarise(mean = mean(ACTUAL_COMPLETION_HRS))
+dim(INCIDENTS_first_step_low)
+
+# low good
+INCIDENTS_first_step_low_bad <- INCIDENTS_first_step_low %>%
+                                 filter(ACTUAL_COMPLETION_HRS > 144)
+dim(INCIDENTS_first_step_low_bad)
+
+dim(INCIDENTS_first_step_low_bad)[1]/dim(INCIDENTS_first_step_low)[1]
+
+library(ggplot2)
+# Basic histogram
+p_low <- ggplot(INCIDENTS_first_step_low, aes(x=ACTUAL_COMPLETION_HRS)) + 
+         geom_histogram(bin = 100,
+                        color="black", 
+                        fill="white")
+
+p_low2 <- ggplot(INCIDENTS_first_step_low, aes(x=ACTUAL_COMPLETION_HRS)) + 
+         geom_boxplot()
+
+p_low
+p_low2
+
+# very right skew
+# so mean very high
+# 很多case是一个积压的状态
+```
+
+```{r}
+# Medium
+INCIDENTS_first_step_Medium <- INCIDENTS_first_step %>%
+                            filter(PRIORITY == "Medium", ACTUAL_COMPLETION_HRS > 0) 
+                            
+INCIDENTS_first_step_Medium %>% summarise(mean = mean(ACTUAL_COMPLETION_HRS))
+dim(INCIDENTS_first_step_Medium)
+
+# Medium bad
+INCIDENTS_first_step_Medium_bad <- INCIDENTS_first_step_Medium %>%
+                                   filter(ACTUAL_COMPLETION_HRS > 48)
+dim(INCIDENTS_first_step_Medium_bad)
+
+dim(INCIDENTS_first_step_Medium_bad)[1]/dim(INCIDENTS_first_step_Medium)[1]
+
+library(ggplot2)
+# Basic histogram
+p_Medium <- ggplot(INCIDENTS_first_step_Medium, aes(x=ACTUAL_COMPLETION_HRS)) + 
+         geom_histogram(bin = 100,
+                        color="black", 
+                        fill="pink")
+
+p_Medium2 <- ggplot(INCIDENTS_first_step_Medium, aes(x=ACTUAL_COMPLETION_HRS)) + 
+         geom_boxplot()
+
+p_Medium
+p_Medium2
+
+# very right skew
+# so mean very high
+# 很多case是一个积压的状态
+```
+
+
+```{r}
+# Medium
+INCIDENTS_first_step_High <- INCIDENTS_first_step %>%
+                            filter(PRIORITY == "High", BUSINESS_COMPLETION_HRS > 0, BUSINESS_COMPLETION_HRS < 100000) 
+                            
+INCIDENTS_first_step_High %>% summarise(mean = mean(BUSINESS_COMPLETION_HRS))
+dim(INCIDENTS_first_step_High)
+
+# Medium bad
+INCIDENTS_first_step_High_bad <- INCIDENTS_first_step_High %>%
+                                   filter(BUSINESS_COMPLETION_HRS > 8)
+dim(INCIDENTS_first_step_High_bad)
+
+dim(INCIDENTS_first_step_High_bad)[1]/dim(INCIDENTS_first_step_High)[1]
+
+library(ggplot2)
+# Basic histogram
+p_High <- ggplot(INCIDENTS_first_step_High, aes(x=BUSINESS_COMPLETION_HRS)) + 
+         geom_histogram(bin = 100,
+                        color="black", 
+                        fill="pink")
+
+p_High2 <- ggplot(INCIDENTS_first_step_High, aes(x=BUSINESS_COMPLETION_HRS)) + 
+          geom_boxplot()
+
+p_High
+p_High2
+
+# very right skew
+# so mean very high
+# 很多case是一个积压的状态
+```
+
+
+
+```{r}
+(dim(INCIDENTS_first_step_High_bad)[1] + dim(INCIDENTS_first_step_Medium_bad)[1] + dim(INCIDENTS_first_step_low_bad)[1])/(dim(INCIDENTS_first_step_High)[1] + dim(INCIDENTS_first_step_Medium_bad)[1] +dim(INCIDENTS_first_step_low)[1])
+```
+
+
+
+
+
+
+
+
+
+
+

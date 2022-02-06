@@ -1,0 +1,37 @@
+---
+title: "Q9"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r， include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(readr)
+INCIDENT_OWNER_HISTORY <- read_csv("Desktop/kandefu/INCIDENT_OWNER_HISTORY.csv")
+INCIDENTS <- read_csv("Desktop/kandefu/INCIDENTS.csv")
+```
+
+```{r}
+glimpse(INCIDENTS)
+```
+
+
+```{r}
+INCIDENTS_Q9 <- INCIDENTS %>%
+                       select(TICKET_NMBR, EXTERNAL_SYSTEM, BUSINESS_COMPLETION_HRS) %>%
+                       filter(is.na(TICKET_NMBR) == FALSE, is.na(EXTERNAL_SYSTEM)==FALSE,          is.na(BUSINESS_COMPLETION_HRS) == FALSE)
+
+mean_time <- INCIDENTS_Q9 %>% 
+             group_by(EXTERNAL_SYSTEM) %>%
+             summarise(mean = mean(BUSINESS_COMPLETION_HRS),
+                        n = n())
+             
+mean_time %>% arrange(desc(mean))
+mean_time
+```
+

@@ -1,0 +1,53 @@
+---
+title: "Second Step"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+```
+
+```{r}
+INCIDENTS_Second_step <- INCIDENTS %>%
+                        select(TICKET_NMBR, PRIORITY, ACTUAL_COMPLETION_HRS, 
+                               BUSINESS_COMPLETION_HRS, STATUS, service) %>%
+                        filter(is.na(TICKET_NMBR) == FALSE, 
+                               is.na(PRIORITY)==FALSE,
+                               is.na(ACTUAL_COMPLETION_HRS) == FALSE,
+                               is.na(BUSINESS_COMPLETION_HRS) == FALSE,
+                               is.na(STATUS) == FALSE,
+                               is.na(service) == FALSE)
+glimpse(INCIDENTS_Second_step)
+  
+```
+
+```{r}
+INCIDENTS_Second_step_Medium <- INCIDENTS_Second_step %>%
+                            filter(PRIORITY == "Medium", ACTUAL_COMPLETION_HRS > 0)
+
+
+glimpse(INCIDENTS_first_step)
+
+kruskal.test(STATUS ~ BUSINESS_COMPLETION_HRS, data = INCIDENTS_Second_step_Medium)
+
+kruskal.test(service ~ BUSINESS_COMPLETION_HRS, data = INCIDENTS_Second_step_Medium)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

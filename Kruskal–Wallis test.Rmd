@@ -1,0 +1,87 @@
+---
+title: "KW"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+INCIDENTS <- read_csv("Desktop/kandefu/INCIDENTS.csv")
+View(INCIDENTS)
+```
+```{r}
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+```
+
+```{r}
+res.aov <- aov(STATUS ~ BUSINESS_COMPLETION_HRS, data = INCIDENTS)
+```
+
+
+
+```{r}
+kruskal.test(STATUS ~ BUSINESS_COMPLETION_HRS, data = INCIDENTS)
+```
+```{r}
+kruskal.test(service ~ BUSINESS_COMPLETION_HRS, data = INCIDENTS)
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(INCIDENTS) + 
+  geom_boxplot(aes(x = service, y = BUSINESS_COMPLETION_HRS),horizontal=TRUE,axes=FALSE,outline=FALSE)
+```
+
+```{r}
+library(ggplot2)
+ggplot(INCIDENTS) + 
+  geom_boxplot(aes(x = STATUS, y = BUSINESS_COMPLETION_HRS), horizontal=TRUE,axes=FALSE,outline=FALSE)
+```
+
+
+
+```{r, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(readr)
+INCIDENT_OWNER_HISTORY <- read_csv("Desktop/kandefu/INCIDENT_OWNER_HISTORY.csv")
+```
+
+```{r}
+INCIDENT_OWNER_HISTORY_Q3 <- INCIDENT_OWNER_HISTORY %>%
+                       select(assigned_group, TIME_IN_STATUS_BY_OWNER_HRS) %>%
+                       filter(is.na(assigned_group) == FALSE, is.na(TIME_IN_STATUS_BY_OWNER_HRS)==FALSE)
+
+mean_time <- INCIDENT_OWNER_HISTORY_Q3 %>% group_by(assigned_group) %>%
+                        summarise(mean = mean(TIME_IN_STATUS_HRS),
+                                  n = n())
+
+mean_time
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
